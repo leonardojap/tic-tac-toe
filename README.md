@@ -6,15 +6,16 @@ The tic-tac-toe game, at real time, made with nodeJs and SocketIo
 
 Instalar / Install
 
-  git clone https://github.com/leonardojap/tic-tac-to.git
+    git clone https://github.com/leonardojap/tic-tac-to.git
   
-  cd tic-tac-toe
+    cd tic-tac-toe
   
-  npm i
+    npm i
   
-  node server
+    node server
   
-  open browser in localhost:3000 and play
+    open browser in localhost:3000 and play
+  
   
   
   
