@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Tic Tac Toe</title>
+    <style>
+        body{
+            background: #666;
+            color: #666;
+        }
+        h1{
+            text-align: center;
+            color: #fff;
+        }
+        .clearfix{
+            clear: both;
+        }
+        #box{
+            width: 350px;
+            overflow: auto;
+            margin: 40px auto;
+            background: #666;
+            padding-bottom: 40px;
+            border-radius: 10px;
+        }
+        #message{
+            background: #333;
+            color: #fff;
+        }
+        #gameBoard li{
+            float: left;
+            margin: 10px;
+            height: 70px;
+            width: 70px;
+            font-size: 60px;
+            background: #212121;
+            color: #ccc;
+            list-style: none;
+            text-align: center;
+            border-radius: 5px;
+        }
+        #gameBoard li:hover, #reset:hover{
+            cursor: pointer;
+            background: #000;
+        }
+        #reset{
+            border: 0;
+            background: #ff6d00;
+            color: #fff;
+            width: 70%;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .reset{
+            border: 0;
+            background: #ff6d00;
+            color: #fff;
+            width: 70%;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .o{
+            color: green !important;
+        }
+        .x{
+            color: red !important;
+        }
+        footer{
+            display: block;
+            text-align: center;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="text-center"id="box">
+        <header style="text-align: center; color:#fff;">
+        <h1>Play Tic Tac Toe</h1>
+        <h2 id="messages"></h2>
+        <h2 id="messagesGame"></h2>
+        </header>
+    <div id="message"></div>
+        <ul id="gameBoard">
+        <li class="tic" id="1" onclick="send(1)"></li>
+        <li class="tic" id="2" onclick="send(2)"></li>
+        <li class="tic" id="3" onclick="send(3)"></li>
+        <li class="tic" id="4" onclick="send(4)"></li>
+        <li class="tic" id="5" onclick="send(5)"></li>
+        <li class="tic" id="6" onclick="send(6)"></li>
+        <li class="tic" id="7" onclick="send(7)"></li>
+        <li class="tic" id="8" onclick="send(8)"></li>
+        <li class="tic" id="9" onclick="send(9)"></li>
+        </ul>
+        <div class="clearfix"></div>
+    <footer>
+        <button id="reset">Surrender</button>
+    </footer>
+    <footer id="new">
+            <button id="new" class="reset">New game</button>
+    </footer>
+    </div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var myId = "";
+        var game = true;
+        var socket = io();
+        //socket connection here
+        $(()=>{
+            $("#new").hide();
+
+            //start connection to server socket
+            socket.on('start connection', (msm)=>{
+                
+            });
+
+            socket.on('start game', (msm,id)=>{
+                if(game){
+                    $('#messages').append($('<p>').text(msm));
+                    myId = id;
+                }
+            });
+            socket.on("message", (mess)=>{
+                $('#messagesGame').html(mess);
+            })
+
+
+            socket.on("play",(game, info)=>{
+                if(game){
+                    cont = 0;
+                    console.log(game);
+                    for(var i = 0; i < game.length; i++){
+                        for(j = 0; j < game[i].length; j++){
+                            cont += 1;
+                            if(game[i][j] != "."){
+                                $("#"+cont).html(game[i][j]);
+                            }
+                        }
+                    }
+                    $('#messagesGame').html(info);
+                }
+            });
+
+            socket.on("win", (data, winner)=>{
+                $('#messagesGame').html(data);
+                if(winner == "".trim()){
+                    window.location = "/tied"
+                }else if(winner == myId){
+                    window.location = "/youWin";
+                }else{
+                    window.location = "/tryAgain";
+                }
+            });
+            socket.on("windefault", (data)=>{
+                window.location = "/default";
+            })
+
+            $("#reset").on("click", ()=>{
+                if(game){
+                    socket.emit("user set move", "r", myId);
+                }
+            })
+
+            $("#new").click(()=>{
+                window.location = "/";
+            });
+
+        })
+        function send(value){
+            if(game){
+                socket.emit("user set move", value, myId);
+            }
+        }
+    </script>
+</html>
